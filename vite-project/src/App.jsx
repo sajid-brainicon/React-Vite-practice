@@ -1,26 +1,82 @@
-import Contactform from './components/Contactform.jsx';
-import Hero from './components/Hero.jsx';
-import Footer from './components/Footer.jsx';
-import Header from './components/Header.jsx';
+import { useState } from "react";
+import "./App.css";
 
+function App() {
+  const [task, setTask] = useState("");
+  const [todos, setTodos] = useState([]);
 
-const App = () => {
-  let marks = 85;
+  const addTask = () => {
+    if (task.trim() === "") return;
+
+    setTodos([
+      ...todos,
+      {
+        id: Date.now(),
+        text: task,
+        completed: false,
+      },
+    ]);
+
+    setTask("");
+  };
+
+  const toggleComplete = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      )
+    );
+  };
+
+  const deleteTask = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
   return (
-    <div>
-      <Header />
-      {marks >= 90 ? (
-        <h1>Excellent</h1>
-      ) : marks >= 75 ? (
-        <h1>Good</h1>
-      ) : (
-        <h1>Needs Improvement</h1>
-      )}
-      <Hero />
-      <Contactform />
-      <Footer />
+    <div className="container">
+      <div className="todo-box">
+        <h1>My Todo List</h1>
+
+        <div className="input-area">
+          <input
+            type="text"
+            placeholder="Enter a task..."
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addTask()}
+          />
+
+          <button onClick={addTask}>Add</button>
+        </div>
+
+        <ul>
+          {todos.map((todo) => (
+            <li key={todo.id}>
+              <span
+                className={todo.completed ? "completed" : ""}
+                onClick={() => toggleComplete(todo.id)}
+              >
+                {todo.text}
+              </span>
+
+              <button
+                className="delete-btn"
+                onClick={() => deleteTask(todo.id)}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {todos.length === 0 && (
+          <p className="empty">No tasks yet.</p>
+        )}
+      </div>
     </div>
   );
-};
+}
 
 export default App;
